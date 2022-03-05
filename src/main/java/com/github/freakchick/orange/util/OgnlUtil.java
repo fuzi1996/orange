@@ -41,7 +41,7 @@ public class OgnlUtil {
         }
         if (value.getClass().isArray()) {
             // the array may be primitive, so Arrays.asList() may throw
-            // a ClassCastException (issue 209). Do the work manually
+            // a ClassCastException (mybatis:issue 209). Do the work manually
             // Curse primitives! :) (JGB)
             int size = Array.getLength(value);
             List<Object> answer = new ArrayList<Object>();

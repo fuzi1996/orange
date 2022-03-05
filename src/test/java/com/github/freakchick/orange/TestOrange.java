@@ -107,7 +107,7 @@ public class TestOrange {
         String sql = (
                 "select * from user where name in " +
                 "<foreach collection='list' index='idx' open='(' separator=',' close=')'>" +
-                        "#{item.name}== #{idx}" +
+                        "#{item.name} == #{idx}" +
                         "<if test='id!=null'>  " +
                         "   and id = #{id}" +
                         "</if>" +
@@ -123,12 +123,11 @@ public class TestOrange {
 
         SqlMeta sqlMeta = engine.parse(sql, map);
         // System.out.println(sqlMeta.getSql());
-        Assert.assertEquals("select * from user where name in  (?== ?      and id = ?,?== ?      and id = ?)",sqlMeta.getSql());
+        Assert.assertEquals("select * from user where name in  (? == ?      and id = ?,? == ?      and id = ?)",sqlMeta.getSql());
         // sqlMeta.getJdbcParamValues().forEach(System.out::println);
         Assert.assertEquals(6,sqlMeta.getJdbcParamValues().size());
     }
 
-// TODO
 //    @Test
 //    public void testForeachMap() {
 //        DynamicSqlEngine engine = new DynamicSqlEngine();
