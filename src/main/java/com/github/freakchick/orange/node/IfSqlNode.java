@@ -20,7 +20,8 @@ public class IfSqlNode implements SqlNode {
     public void apply(Context context) {
         Boolean value = context.getOgnlBooleanValue(test);
         if (value) {
-            context.appendSql(" ");//标签类SqlNode先拼接空格，和前面的内容隔开
+            //标签类SqlNode先拼接空格，和前面的内容隔开
+            context.appendSql(" ");
             contents.apply(context);
         }
 

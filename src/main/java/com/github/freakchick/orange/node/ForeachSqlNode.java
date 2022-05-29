@@ -37,8 +37,15 @@ public class ForeachSqlNode implements SqlNode {
 
     @Override
     public void apply(Context context) {
-        context.appendSql(" ");//标签类SqlNode先拼接空格，和前面的内容隔开
+        // 标签类SqlNode先拼接空格，和前面的内容隔开
         Iterable<?> iterable = OgnlUtil.getIterable(collection, context.getData());
+        // issue 3
+        if(null == iterable || !iterable.iterator().hasNext()){
+            return;
+        }
+
+        context.appendSql(" ");
+
         int currentIndex = 0;
 
         ArrayList<Integer> indexs = new ArrayList<>();
@@ -71,10 +78,12 @@ public class ForeachSqlNode implements SqlNode {
         Set<String> temp = new HashSet<>();
         contents.applyParameter(set);
         for (String key: temp){
-            if (key.matches(item + "[.,:\\s\\[]"))
+            if (key.matches(item + "[.,:\\s\\[]")){
                 continue;
-            if (key.matches(index + "[.,:\\s\\[]"))
+            }
+            if (key.matches(index + "[.,:\\s\\[]")){
                 continue;
+            }
             set.add(key);
         }
     }
@@ -89,15 +98,15 @@ public class ForeachSqlNode implements SqlNode {
             public String handleToken(String content) {
                 //item替换成自己的变量名: item[0]  item[1] item[2] ......
                 String replace = RegexUtil.replace(content, item, newItem);
-                if (replace.equals(content))
+                if (replace.equals(content)) {
                     //index替换成自己的变量名: __index_xxx[0]  __index_xxx[1] __index_xxx[2] ......
                     replace = RegexUtil.replace(content, index, newIndex);
+                }
                 StringBuilder builder = new StringBuilder();
                 return builder.append("#{").append(replace).append("}").toString();
             }
         });
-        String parse = tokenParser.parse(sql);
-        return parse;
+        return tokenParser.parse(sql);
     }
 
 }

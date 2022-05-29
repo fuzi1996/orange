@@ -6,8 +6,6 @@ import com.github.freakchick.orange.node.SqlNode;
 import com.github.freakchick.orange.tag.XmlParser;
 import com.github.freakchick.orange.token.TokenHandler;
 import com.github.freakchick.orange.token.TokenParser;
-
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -15,7 +13,7 @@ import java.util.Set;
 
 public class DynamicSqlEngine {
 
-    Cache cache = new Cache();
+    private Cache cache = new Cache();
 
     public SqlMeta parse(String text, Map<String, Object> params) {
         text = String.format("<root>%s</root>", text);
@@ -73,14 +71,5 @@ public class DynamicSqlEngine {
         });
         String sql = tokenParser.parse(context.getSql());
         context.setSql(sql);
-    }
-
-    public static void main(String[] args) {
-        DynamicSqlEngine engine = new DynamicSqlEngine();
-        String sql = ("<root>select <if test='minId != null'>id > ${minId} #{minId} <if test='maxId != null'> and id &lt; ${maxId} #{maxId}</if> </if></root>");
-        Map<String, Object> map = new HashMap<>();
-        map.put("minId", 100);
-        map.put("maxId", 500);
-        engine.parse(sql, map);
     }
 }

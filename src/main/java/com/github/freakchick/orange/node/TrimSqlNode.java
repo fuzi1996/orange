@@ -27,23 +27,25 @@ public class TrimSqlNode implements SqlNode {
     public void apply(Context context) {
         context.appendSql(" ");//标签类SqlNode先拼接空格，和前面的内容隔开
         Context proxy = new Context(context.getData());
-//        FilterContext filterContext = new FilterContext(context);
+        // FilterContext filterContext = new FilterContext(context);
         contents.apply(proxy);
         String sql = proxy.getSql().trim();
 
         if (sql.length() > 0) {
-            if (prefixesToOverride != null)
+            if (prefixesToOverride != null){
                 for (String key : prefixesToOverride) {
                     if (sql.startsWith(key)) {
                         sql = sql.substring(key.length());
                     }
                 }
-            if (suffixesToOverride != null)
+            }
+            if (suffixesToOverride != null) {
                 for (String key : suffixesToOverride) {
                     if (sql.endsWith(key)) {
                         sql = sql.substring(0, sql.length() - key.length());
                     }
                 }
+            }
         }
 
         if (StringUtils.isNotBlank(sql) && StringUtils.isNotBlank(prefix)) {

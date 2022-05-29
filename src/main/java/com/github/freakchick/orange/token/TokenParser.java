@@ -1,7 +1,5 @@
 package com.github.freakchick.orange.token;
 
-import org.dom4j.DocumentException;
-
 
 public class TokenParser {
 
@@ -13,13 +11,6 @@ public class TokenParser {
         this.openToken = openToken;
         this.closeToken = closeToken;
         this.tokenHandler = tokenHandler;
-    }
-
-    public static void main(String[] args) throws DocumentException {
-//        String parse = parse("   and name = #{minId\\}} and id < #{yy \n} and name = #{ eee  }");
-//        System.out.println(parse);
-
-//        parseVariableNames("select * from Blog where 1=1<if test=\"minId != null and minId != '' \">  and id > #{minId} </if><if test=\"maxId != null and maxId != '' \"> and id &lt; #{maxId} </if> \t<if test=\"minId != null and minId != '' \"> and id > #{minId} </if> and udr = #{  ffr}");
     }
 
     /**
