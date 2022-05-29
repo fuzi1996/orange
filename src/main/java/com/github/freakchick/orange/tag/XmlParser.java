@@ -13,15 +13,15 @@ import java.util.Map;
 
 public class XmlParser {
 
-    static Map<String, TagHandler> nodeHandlers = new HashMap<String, TagHandler>() {
-        {
-            put("foreach", new ForeachHandler());
-            put("if", new IfHandler());
-            put("trim", new TrimHandler());
-            put("where", new WhereHandler());
-            put("set", new SetHandler());
-        }
-    };
+    static Map<String, TagHandler> nodeHandlers = new HashMap<String, TagHandler>();
+
+    static {
+        nodeHandlers.put("foreach", new ForeachHandler());
+        nodeHandlers.put("if", new IfHandler());
+        nodeHandlers.put("trim", new TrimHandler());
+        nodeHandlers.put("where", new WhereHandler());
+        nodeHandlers.put("set", new SetHandler());
+    }
 
     //将xml内容解析成sqlNode类型
 
