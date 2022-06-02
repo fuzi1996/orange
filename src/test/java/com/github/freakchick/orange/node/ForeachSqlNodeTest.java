@@ -8,6 +8,7 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -41,6 +42,58 @@ public class ForeachSqlNodeTest {
         // System.out.println(sqlMeta.getSql());
         Assert.assertEquals("select * from user where name in ",sqlMeta.getSql());
         // sqlMeta.getJdbcParamValues().forEach(System.out::println);
+        Assert.assertEquals(0,sqlMeta.getJdbcParamValues().size());
+    }
+
+    @Test
+    public void testUnEmptyIterableForeach2() {
+        DynamicSqlEngine engine = new DynamicSqlEngine();
+        String sql = (
+                "select * from user " +
+                        "where name in " +
+                        "<foreach collection='list' index='idx' open='(' separator=',' close=')'>" +
+                        "#{item.name} == #{idx}" +
+                        "<if test='id != null'>  " +
+                        "and id = #{id}" +
+                        "</if>" +
+                        "</foreach>"
+        );
+        Map<String, Object> map = new HashMap<>();
+
+        User user = new User(10,"name");
+
+        ArrayList<User> arrayList = new ArrayList<>();
+
+        arrayList.add(user);
+        map.put("list", arrayList.toArray());
+        map.put("id", 100);
+
+        SqlMeta sqlMeta = engine.parse(sql, map);
+        // System.out.println(sqlMeta.getSql());
+        Assert.assertEquals("select * from user where name in  (? == ?   and id = ?)",sqlMeta.getSql());
+        // sqlMeta.getJdbcParamValues().forEach(System.out::println);
+        Assert.assertEquals(3,sqlMeta.getJdbcParamValues().size());
+    }
+
+    @Test
+    public void testOrderForeach() {
+        DynamicSqlEngine engine = new DynamicSqlEngine();
+        String sql = (
+                "select * from author" +
+                "<foreach item=\"item\" collection=\"orderConditions\" separator=\",\" open=\"order by\" close=\" \" index=\"index\">" +
+                "    ${item}" +
+                "</foreach>"
+        );
+        Map<String, Object> map = new HashMap<>();
+
+        List<String> columns = new ArrayList<>();
+        columns.add("rank");
+        columns.add("age");
+        columns.add("id");
+        map.put("orderConditions", columns);
+
+        SqlMeta sqlMeta = engine.parse(sql, map);
+        Assert.assertEquals("select * from author order by    rank,    age,    id ",sqlMeta.getSql());
         Assert.assertEquals(0,sqlMeta.getJdbcParamValues().size());
     }
 

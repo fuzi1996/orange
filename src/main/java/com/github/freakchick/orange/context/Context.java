@@ -10,8 +10,6 @@ public class Context {
     StringBuilder sqlBuilder = new StringBuilder();
     List<Object> jdbcParameters = new ArrayList<>();
     Set<String> paramNames = new HashSet<>();
-
-    //    List<Object> jdbcParameterNames = new ArrayList<>();
     Map<String, Object> data;
 
     public Context(Map<String, Object> data) {
@@ -60,6 +58,10 @@ public class Context {
 
     public Map<String, Object> getData() {
         return data;
+    }
+
+    public void bind(String name, Object value) {
+        data.put(name, value);
     }
 
 }
