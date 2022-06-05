@@ -56,14 +56,19 @@ public class ForeachSqlNode implements SqlNode {
         for (Object o : iterable) {
             // 每次把当前循环的当前索引值追加到参数变量中
             ((ArrayList<Integer>) context.getData().get(indexDataName)).add(currentIndex);
-            //不是第一次，需要拼接分隔符
-            if (currentIndex != 0) {
-                context.appendSql(separator);
-            }
+
             Context proxy = new Context(context.getData());
             // issues/I4DF07
             applyItem(proxy,o,currentIndex);
             String childSqlText = getChildText(proxy, currentIndex);
+            // foreach 里面存在if等可能最终语句为空因此需要判断一下
+            boolean hasChildSqlText = null != childSqlText && childSqlText.trim().length() > 0;
+
+            //不是第一次，需要拼接分隔符
+            if (currentIndex != 0 && hasChildSqlText) {
+                context.appendSql(separator);
+            }
+
             context.appendSql(childSqlText);
             currentIndex++;
         }
