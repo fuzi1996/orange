@@ -6,10 +6,7 @@ import com.github.freakchick.orange.engine.DynamicSqlEngine;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @program: orange
@@ -212,5 +209,128 @@ public class ForeachSqlNodeTest {
                 "        )",sqlMeta.getSql());
         //sqlMeta.getJdbcParamValues().forEach(System.out::println);
         Assert.assertEquals(1,sqlMeta.getJdbcParamValues().size());
+    }
+
+    @Test
+    public void shouldReportMissingPropertyName(){
+        String sql = (
+                "insert into users (id, name) values\n" +
+                        "    <foreach item=\"item\" collection=\"list\" separator=\",\">\n" +
+                        "        (#{item.idd}, #{item.name})\n" +
+                        "    </foreach>"
+        );
+        Map<String, Object> map = new HashMap<>();
+        Map<String, Object> friend = new HashMap<>();
+        friend.put("id",3);
+        friend.put("name","aname");
+        List<Map<String, Object>> list = new ArrayList<>();
+        list.add(friend);
+        map.put("list", list);
+
+        try {
+            this.engine.parse(sql, map);
+            Assert.assertTrue(false);
+        }catch (Exception e){
+            Assert.assertTrue(e instanceof RuntimeException);
+            Assert.assertEquals("could not found value : list[0].idd",e.getMessage());
+        }
+    }
+
+    @Test
+    public void shouldRemoveItemVariableInTheContext(){
+        String sql = (
+                "    select count(*) from users where id in\n" +
+                "    <foreach collection=\"ids\" item=\"id\" open=\"(\" close=\")\" separator=\",\">\n" +
+                "      <foreach collection=\"ids2\" item=\"id\">\n" +
+                "        #{id},\n" +
+                "      </foreach>\n" +
+                "      #{id}\n" +
+                "    </foreach>\n" +
+                "    or id = #{id}"
+        );
+        Map<String, Object> map = new HashMap<>();
+
+        List<Integer> ids = new ArrayList<>();
+        ids.add(2);
+        ids.add(3);
+
+        List<Integer> ids2 = new ArrayList<>();
+        ids2.add(4);
+        ids2.add(5);
+
+        map.put("id", 1);
+        map.put("ids", ids);
+        map.put("ids2", ids2);
+
+        SqlMeta sqlMeta = this.engine.parse(sql, map);
+        // System.out.println(sqlMeta.getSql());
+        Assert.assertEquals("    select count(*) from users where id in\n" +
+                "     (\n" +
+                "       \n" +
+                "        ?,\n" +
+                "      \n" +
+                "        ?,\n" +
+                "      \n" +
+                "      ?\n" +
+                "    ,\n" +
+                "       \n" +
+                "        ?,\n" +
+                "      \n" +
+                "        ?,\n" +
+                "      \n" +
+                "      ?\n" +
+                "    )\n" +
+                "    or id = ?",sqlMeta.getSql());
+        // sqlMeta.getJdbcParamValues().forEach(System.out::println);
+        Assert.assertEquals(7,sqlMeta.getJdbcParamValues().size());
+    }
+
+    @Test
+    public void shouldRemoveIndexVariableInTheContext(){
+        String sql = (
+                "    select count(*) from users where id in\n" +
+                "    <foreach collection=\"idxs\" index=\"idx\" open=\"(\" close=\")\" separator=\",\">\n" +
+                "      <foreach collection=\"idxs2\" index=\"idx\">\n" +
+                "        #{idx},\n" +
+                "      </foreach>\n" +
+                "      #{idx} + 2\n" +
+                "    </foreach>\n" +
+                "    or id = #{idx}"
+        );
+        Map<String, Object> map = new HashMap<>();
+
+        List<Integer> ids = new ArrayList<>();
+        ids.add(2);
+        ids.add(3);
+
+        List<Integer> ids2 = new ArrayList<>();
+        ids2.add(4);
+        ids2.add(5);
+
+        map.put("idx", 1);
+        map.put("idxs", ids);
+        map.put("idxs2", ids2);
+
+        SqlMeta sqlMeta = this.engine.parse(sql, map);
+        // System.out.println(sqlMeta.getSql());
+        Assert.assertEquals("    select count(*) from users where id in\n" +
+                "     (\n" +
+                "       \n" +
+                "        ?,\n" +
+                "      \n" +
+                "        ?,\n" +
+                "      \n" +
+                "      ? + 2\n" +
+                "    ,\n" +
+                "       \n" +
+                "        ?,\n" +
+                "      \n" +
+                "        ?,\n" +
+                "      \n" +
+                "      ? + 2\n" +
+                "    )\n" +
+                "    or id = ?",sqlMeta.getSql());
+        // sqlMeta.getJdbcParamValues().forEach(System.out::println);
+        Assert.assertEquals(7,sqlMeta.getJdbcParamValues().size());
     }
 }

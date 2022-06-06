@@ -53,6 +53,9 @@ public class ForeachSqlNode implements SqlNode {
         context.getData().put(indexDataName, indexs);
         context.appendSql(open);
 
+        boolean hasOriginData = context.getData().containsKey(this.item);
+        Object originData = context.getData().getOrDefault(this.item,null);
+
         for (Object o : iterable) {
             // 每次把当前循环的当前索引值追加到参数变量中
             ((ArrayList<Integer>) context.getData().get(indexDataName)).add(currentIndex);
@@ -72,7 +75,13 @@ public class ForeachSqlNode implements SqlNode {
             context.appendSql(childSqlText);
             currentIndex++;
         }
-        context.getData().remove(item);
+        if(hasOriginData){
+            // 原参数中含有`${item}`作为key的数据
+            context.bind(this.item,originData);
+        }else{
+            // 原参数中不含有`${item}`作为key的数据
+            context.getData().remove(item);
+        }
         context.appendSql(close);
     }
 
