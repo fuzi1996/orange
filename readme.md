@@ -1,33 +1,27 @@
 # 概述
 
-- orange是一个动态sql引擎，类似mybatis的功能，解析带标签的动态sql，生成?占位符的sql和?对应的参数列表。
+- orange是一个动态sql引擎，类似mybatis的功能，解析带标签的动态sql，生成`?`占位符的sql和`?`对应的参数列表。
 - 借鉴了mybatis源码，相当于mybatis中的动态sql解析功能的抽取。
-- 支持 if foreach where set trim
+- 支持 `<if>` `<foreach>` `<where>` `<set>` `<trim>`
 
 # 使用教程
 
-- 先拉取源代码，安装到maven本地仓库：
-```
-mvn -DskipTests=true install
-```
-- 安装到maven本地仓库后，就可以在自己的maven项目中使用orange了
-```
-#pom引入maven坐标
+- 在自己的maven项目中引入maven坐标
+```xml
 <dependency>
-    <groupId>com.github.freakchick</groupId>
+    <groupId>io.github.freakchick</groupId>
     <artifactId>orange</artifactId>
     <version>1.0</version>
 </dependency>
 ```
 
+- 核心api
 ```
-#核心api
 DynamicSqlEngine engine = new DynamicSqlEngine();
 SqlMeta sqlMeta = engine.parse(sql, map);
 ```
-
+- 示例
 ```
-#示例
 @Test
 public void testForeach() {
     DynamicSqlEngine engine = new DynamicSqlEngine();
@@ -47,9 +41,9 @@ public void testForeach() {
 
 ```
 
-
+- 示例执行结果：
 ```
-#示例执行结果：
+
 select * from user where name in  ( ? , ? ) 
 tom
 jerry
