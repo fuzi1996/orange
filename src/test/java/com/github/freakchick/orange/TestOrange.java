@@ -1,5 +1,6 @@
 package com.github.freakchick.orange;
 
+import com.github.freakchick.orange.domain.User;
 import com.github.freakchick.orange.engine.DynamicSqlEngine;
 import org.junit.Assert;
 import org.junit.Test;
