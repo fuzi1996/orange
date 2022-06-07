@@ -1,7 +1,7 @@
-package com.github.freakchick.orange.node;
+package com.github.freakchick.orange.node.foreach;
 
 import com.github.freakchick.orange.SqlMeta;
-import com.github.freakchick.orange.User;
+import com.github.freakchick.orange.domain.User;
 import com.github.freakchick.orange.engine.DynamicSqlEngine;
 import org.junit.Assert;
 import org.junit.Test;
@@ -41,6 +41,10 @@ public class ForeachSqlNodeTest {
         Assert.assertEquals("select * from user where name in ",sqlMeta.getSql());
         // sqlMeta.getJdbcParamValues().forEach(System.out::println);
         Assert.assertEquals(0,sqlMeta.getJdbcParamValues().size());
+
+        Set<String> strings = this.engine.parseParameter(sql);
+        //strings.forEach(System.out::println);
+        Assert.assertEquals(4,strings.size());
     }
 
     @Test
@@ -70,6 +74,10 @@ public class ForeachSqlNodeTest {
         Assert.assertEquals("select * from user where name in  (? == ?   and id = ?)",sqlMeta.getSql());
         // sqlMeta.getJdbcParamValues().forEach(System.out::println);
         Assert.assertEquals(3,sqlMeta.getJdbcParamValues().size());
+
+        Set<String> strings = this.engine.parseParameter(sql);
+        //strings.forEach(System.out::println);
+        Assert.assertEquals(4,strings.size());
     }
 
     @Test
@@ -91,6 +99,10 @@ public class ForeachSqlNodeTest {
         SqlMeta sqlMeta = this.engine.parse(sql, map);
         Assert.assertEquals("select * from author order by    rank,    age,    id ",sqlMeta.getSql());
         Assert.assertEquals(0,sqlMeta.getJdbcParamValues().size());
+
+        Set<String> strings = this.engine.parseParameter(sql);
+        //strings.forEach(System.out::println);
+        Assert.assertEquals(2,strings.size());
     }
 
     @Test
@@ -119,6 +131,10 @@ public class ForeachSqlNodeTest {
                 "        )",sqlMeta.getSql());
         //sqlMeta.getJdbcParamValues().forEach(System.out::println);
         Assert.assertEquals(0,sqlMeta.getJdbcParamValues().size());
+
+        Set<String> strings = this.engine.parseParameter(sql);
+        //strings.forEach(System.out::println);
+        Assert.assertEquals(2,strings.size());
     }
 // https://gitee.com/freakchicken/orange/issues/I5APFR
 //    @Test
@@ -145,6 +161,9 @@ public class ForeachSqlNodeTest {
 //        //Assert.assertEquals("select * from users\n",sqlMeta.getSql());
 //        sqlMeta.getJdbcParamValues().forEach(System.out::println);
 //        //Assert.assertEquals(0,sqlMeta.getJdbcParamValues().size());
+//        Set<String> strings = this.engine.parseParameter(sql);
+//        strings.forEach(System.out::println);
+//        Assert.assertEquals(2,strings.size());
 //    }
 
 //    @Test
@@ -173,6 +192,9 @@ public class ForeachSqlNodeTest {
 //        //Assert.assertEquals("select * from users\n",sqlMeta.getSql());
 //        sqlMeta.getJdbcParamValues().forEach(System.out::println);
 //        //Assert.assertEquals(0,sqlMeta.getJdbcParamValues().size());
+//        Set<String> strings = this.engine.parseParameter(sql);
+//        strings.forEach(System.out::println);
+//        Assert.assertEquals(2,strings.size());
 //    }
 
     @Test
@@ -209,6 +231,10 @@ public class ForeachSqlNodeTest {
                 "        )",sqlMeta.getSql());
         //sqlMeta.getJdbcParamValues().forEach(System.out::println);
         Assert.assertEquals(1,sqlMeta.getJdbcParamValues().size());
+
+        Set<String> strings = this.engine.parseParameter(sql);
+        //strings.forEach(System.out::println);
+        Assert.assertEquals(2,strings.size());
     }
 
     @Test
@@ -234,6 +260,9 @@ public class ForeachSqlNodeTest {
             Assert.assertTrue(e instanceof RuntimeException);
             Assert.assertEquals("could not found value : list[0].idd",e.getMessage());
         }
+        Set<String> strings = this.engine.parseParameter(sql);
+        //strings.forEach(System.out::println);
+        Assert.assertEquals(3,strings.size());
     }
 
     @Test
@@ -283,6 +312,10 @@ public class ForeachSqlNodeTest {
                 "    or id = ?",sqlMeta.getSql());
         // sqlMeta.getJdbcParamValues().forEach(System.out::println);
         Assert.assertEquals(7,sqlMeta.getJdbcParamValues().size());
+
+        Set<String> strings = this.engine.parseParameter(sql);
+        //strings.forEach(System.out::println);
+        Assert.assertEquals(3,strings.size());
     }
 
     @Test
@@ -332,5 +365,9 @@ public class ForeachSqlNodeTest {
                 "    or id = ?",sqlMeta.getSql());
         // sqlMeta.getJdbcParamValues().forEach(System.out::println);
         Assert.assertEquals(7,sqlMeta.getJdbcParamValues().size());
+
+        Set<String> strings = this.engine.parseParameter(sql);
+        strings.forEach(System.out::println);
+        Assert.assertEquals(3,strings.size());
     }
 }
