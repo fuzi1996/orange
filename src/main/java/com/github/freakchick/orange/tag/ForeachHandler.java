@@ -10,6 +10,9 @@ import java.util.List;
 
 
 public class ForeachHandler implements TagHandler {
+    public ForeachHandler() {
+    }
+
     @Override
     public void handle(Element element, List<SqlNode> targetContents) {
         List<SqlNode> contents = XmlParser.parseElement(element);

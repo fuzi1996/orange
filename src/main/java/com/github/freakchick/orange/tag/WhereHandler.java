@@ -8,7 +8,9 @@ import org.dom4j.Element;
 import java.util.List;
 
 
-public class WhereHandler implements TagHandler{
+public class WhereHandler implements TagHandler {
+    public WhereHandler() {
+    }
 
     @Override
     public void handle(Element element, List<SqlNode> targetContents) {

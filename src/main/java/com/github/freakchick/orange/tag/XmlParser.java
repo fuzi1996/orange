@@ -16,11 +16,11 @@ public class XmlParser {
     static Map<String, TagHandler> nodeHandlers = new HashMap<String, TagHandler>();
 
     static {
-        nodeHandlers.put("foreach", new ForeachHandler());
-        nodeHandlers.put("if", new IfHandler());
         nodeHandlers.put("trim", new TrimHandler());
         nodeHandlers.put("where", new WhereHandler());
         nodeHandlers.put("set", new SetHandler());
+        nodeHandlers.put("foreach", new ForeachHandler());
+        nodeHandlers.put("if", new IfHandler());
     }
 
     //将xml内容解析成sqlNode类型

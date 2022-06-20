@@ -8,7 +8,9 @@ import org.dom4j.Element;
 import java.util.List;
 
 
-public class SetHandler implements TagHandler{
+public class SetHandler implements TagHandler {
+    public SetHandler() {
+    }
 
     @Override
     public void handle(Element element, List<SqlNode> targetContents) {

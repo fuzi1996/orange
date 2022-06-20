@@ -10,6 +10,8 @@ import java.util.List;
 
 
 public class TrimHandler implements TagHandler {
+    public TrimHandler() {
+    }
 
     @Override
     public void handle(Element element, List<SqlNode> targetContents) {
