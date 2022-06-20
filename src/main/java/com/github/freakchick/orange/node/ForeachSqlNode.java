@@ -5,6 +5,7 @@ import com.github.freakchick.orange.token.TokenHandler;
 import com.github.freakchick.orange.token.TokenParser;
 import com.github.freakchick.orange.util.OgnlUtil;
 import com.github.freakchick.orange.util.RegexUtil;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
 
@@ -80,7 +81,7 @@ public class ForeachSqlNode implements SqlNode {
             }
             String childSqlText = getChildText(proxy, currentIndex, mapKey);
             // foreach 里面存在if等可能最终语句为空因此需要判断一下
-            boolean hasChildSqlText = null != childSqlText && childSqlText.trim().length() > 0;
+            boolean hasChildSqlText = StringUtils.isNotBlank(childSqlText);
 
             //不是第一次，需要拼接分隔符
             if (currentIndex != 0 && hasChildSqlText) {
