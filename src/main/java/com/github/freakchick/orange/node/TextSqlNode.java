@@ -9,14 +9,14 @@ import java.util.Set;
 
 public class TextSqlNode implements SqlNode {
 
-    String text;
+    private String text;
 
     public TextSqlNode(String text) {
         this.text = text;
     }
 
     @Override
-    public void apply(Context context) {
+    public boolean apply(Context context) {
         //解析常量值 ${xxx}
         TokenParser tokenParser = new TokenParser("${", "}", new TokenHandler() {
             @Override
@@ -26,14 +26,12 @@ public class TextSqlNode implements SqlNode {
             }
         });
         String s = tokenParser.parse(text);
-
-
         context.appendSql(s);
-
+        return true;
     }
 
     @Override
-    public void applyParameter(Set<String> set) {
+    public boolean applyParameter(Set<String> set) {
         TokenParser tokenParser = new TokenParser("${", "}", new TokenHandler() {
             @Override
             public String handleToken(String paramName) {
@@ -51,5 +49,6 @@ public class TextSqlNode implements SqlNode {
             }
         });
         tokenParser2.parse(s);
+        return true;
     }
 }

@@ -2,15 +2,14 @@ package com.github.freakchick.orange.node.foreach;
 
 import com.github.freakchick.orange.SqlMeta;
 import com.github.freakchick.orange.domain.MapParam;
-import com.github.freakchick.orange.domain.User;
 import com.github.freakchick.orange.engine.DynamicSqlEngine;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.iterableWithSize;
 
 /**
  * @program: orange
@@ -23,11 +22,11 @@ public class ForeachSqlNodeMapTest {
     private DynamicSqlEngine engine = new DynamicSqlEngine();
 
     @Test
-    public void shouldGetStringKeyStringValueEntries() {
+    public void testShouldGetStringKeyStringValueEntries() {
         String sql = (
                 "        insert into string_string (key, value) values\n" +
-                "        <foreach item=\"item\" index=\"key\" collection=\"map\"\n" +
-                "            open=\"\" separator=\",\" close=\"\">(#{key}, #{item})</foreach>"
+                        "        <foreach item=\"item\" index=\"key\" collection=\"map\"\n" +
+                        "            open=\"\" separator=\",\" close=\"\">(#{key}, #{item})</foreach>"
         );
         MapParam mapParam = new MapParam();
         mapParam.getMap().put("key_1", "value 1");
@@ -35,18 +34,18 @@ public class ForeachSqlNodeMapTest {
 
         SqlMeta sqlMeta = this.engine.parse(sql, mapParam.getParam());
         //System.out.println(sqlMeta.getSql());
-        Assert.assertEquals("        insert into string_string (key, value) values\n" +
-                "         (?, ?),(?, ?)",sqlMeta.getSql());
+        assertThat(sqlMeta.getSql(), is("        insert into string_string (key, value) values\n" +
+                "         (?, ?),(?, ?)"));
         //sqlMeta.getJdbcParamValues().forEach(System.out::println);
-        Assert.assertEquals(4,sqlMeta.getJdbcParamValues().size());
+        assertThat(sqlMeta.getJdbcParamValues(), iterableWithSize(4));
 
         Set<String> strings = this.engine.parseParameter(sql);
         //strings.forEach(System.out::println);
-        Assert.assertEquals(3,strings.size());
+        assertThat(strings, iterableWithSize(3));
     }
 
     @Test
-    public void shouldGetNestedBeanKeyValueEntries() {
+    public void testShouldGetNestedBeanKeyValueEntries() {
         String sql = (
                 "select count(*) from key_cols where\n" +
                         "        <foreach item=\"item\" index=\"key\" collection=\"map\"\n" +
@@ -58,14 +57,14 @@ public class ForeachSqlNodeMapTest {
 
         SqlMeta sqlMeta = this.engine.parse(sql, mapParam.getParam());
         //System.out.println(sqlMeta.getSql());
-        Assert.assertEquals("select count(*) from key_cols where\n" +
+        assertThat(sqlMeta.getSql(), is("select count(*) from key_cols where\n" +
                 // 要的就是连在一起的效果
-                "         col_a = ?ANDcol_b = ?",sqlMeta.getSql());
+                "         col_a = ?ANDcol_b = ?"));
         //sqlMeta.getJdbcParamValues().forEach(System.out::println);
-        Assert.assertEquals(2,sqlMeta.getJdbcParamValues().size());
+        assertThat(sqlMeta.getJdbcParamValues(), iterableWithSize(2));
 
         Set<String> strings = this.engine.parseParameter(sql);
         //strings.forEach(System.out::println);
-        Assert.assertEquals(3,strings.size());
+        assertThat(strings, iterableWithSize(3));
     }
 }

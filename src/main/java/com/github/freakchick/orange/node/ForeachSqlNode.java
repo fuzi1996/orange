@@ -32,12 +32,12 @@ public class ForeachSqlNode implements SqlNode {
     }
 
     @Override
-    public void apply(Context context) {
+    public boolean apply(Context context) {
         // 标签类SqlNode先拼接空格，和前面的内容隔开
         Iterable<?> iterable = OgnlUtil.getIterable(collection, context.getData());
         // issue 3
-        if(null == iterable || !iterable.iterator().hasNext()){
-            return;
+        if (!iterable.iterator().hasNext()) {
+            return true;
         }
 
         context.appendSql(" ");
@@ -47,7 +47,7 @@ public class ForeachSqlNode implements SqlNode {
         context.appendSql(open);
 
         boolean hasOriginItemData = context.getData().containsKey(this.item);
-        Object originItemData = context.getData().getOrDefault(this.item,null);
+        Object originItemData = context.getData().getOrDefault(this.item, null);
 
         boolean hasOriginIndexData = context.getData().containsKey(this.index);
         Object originIndexData = context.getData().getOrDefault(this.index,null);
@@ -103,6 +103,7 @@ public class ForeachSqlNode implements SqlNode {
             context.getData().remove(this.index);
         }
         context.appendSql(close);
+        return true;
     }
 
     private void applyItem(Context context, Object o) {
@@ -118,19 +119,20 @@ public class ForeachSqlNode implements SqlNode {
     }
 
     @Override
-    public void applyParameter(Set<String> set) {
+    public boolean applyParameter(Set<String> set) {
         set.add(collection);
         Set<String> temp = new HashSet<>();
         contents.applyParameter(set);
-        for (String key: temp){
-            if (key.matches(item + "[.,:\\s\\[]")){
+        for (String key : temp) {
+            if (key.matches(item + "[.,:\\s\\[]")) {
                 continue;
             }
-            if (key.matches(index + "[.,:\\s\\[]")){
+            if (key.matches(index + "[.,:\\s\\[]")) {
                 continue;
             }
             set.add(key);
         }
+        return true;
     }
 
     /**

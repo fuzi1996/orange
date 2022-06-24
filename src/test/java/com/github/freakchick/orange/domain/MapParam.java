@@ -20,19 +20,27 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class MapParam {
-  public Map<Object, Object> getMap() {
+  private Map<String, Object> map = new LinkedHashMap<>();
+
+  public Map<String, Object> getMap() {
     return map;
   }
 
-  public void setMap(Map<Object, Object> map) {
+  public void setMap(Map<String, Object> map) {
     this.map = map;
   }
 
-  public Map<String, Object> getParam(){
-    Map<String,Object> param = new HashMap<>();
-    param.put("map",this.map);
-    return param;
+  public void put(String key, Object value) {
+    this.map.put(key, value);
   }
 
-  private Map<Object, Object> map = new LinkedHashMap<>();
+  public void clear() {
+    this.map.clear();
+  }
+
+  public Map<String, Object> getParam() {
+    Map<String, Object> param = new HashMap<>();
+    param.put("map", this.map);
+    return param;
+  }
 }

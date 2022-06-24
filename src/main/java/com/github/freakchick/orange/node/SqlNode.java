@@ -7,8 +7,8 @@ import java.util.Set;
 
 public interface SqlNode {
 
-    void apply(Context context);
+    boolean apply(Context context);
 
-    void applyParameter(Set<String> set);
+    boolean applyParameter(Set<String> set);
 
 }

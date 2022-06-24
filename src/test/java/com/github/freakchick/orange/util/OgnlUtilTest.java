@@ -1,16 +1,16 @@
 package com.github.freakchick.orange.util;
 
+import org.junit.jupiter.api.Test;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import junit.framework.TestCase;
-import org.junit.Assert;
-import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @program: orange
@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 public class OgnlUtilTest {
 
     @Test
-    void testGetValue(){
+    public void testGetValue() {
         Map<String, Object> root = new HashMap<>();
         List<Integer> list = new ArrayList<>();
         list.add(12);
@@ -31,75 +31,74 @@ public class OgnlUtilTest {
         root.put("ids", list);
 
         Object o = OgnlUtil.getValue("ids[3]", root);
-        assertTrue(o instanceof Integer);
-        assertEquals(42,o);
+        assertThat(o, instanceOf(Integer.class));
+        assertEquals(42, o);
     }
 
 
-
     @Test
-    void shouldCompareStringsReturnTrue() {
+    public void testShouldCompareStringsReturnTrue() {
         String expression = "username == 'cbegin'";
         Map<String, Object> root = new HashMap<>();
-        root.put("username","cbegin");
+        root.put("username", "cbegin");
         boolean value = OgnlUtil.getBooleanValue(expression, root);
-        assertTrue(value);
+        assertThat(value, is(true));
     }
 
     @Test
-    void shouldCompareStringsReturnFalse() {
+    public void testShouldCompareStringsReturnFalse() {
         String expression = "username == 'norm'";
         Map<String, Object> root = new HashMap<>();
-        root.put("username","cbegin");
+        root.put("username", "cbegin");
         boolean value = OgnlUtil.getBooleanValue(expression, root);
         assertFalse(value);
     }
 
     @Test
-    void shouldReturnTrueIfNotNull() {
+    public void testShouldReturnTrueIfNotNull() {
         // boolean value = evaluator.evaluateBoolean("username", new Author(1, "cbegin", "******", "cbegin@apache.org", "N/A", Section.NEWS));
         // assertTrue(value);
     }
 
     @Test
-    void shouldReturnFalseIfNull() {
+    public void testShouldReturnFalseIfNull() {
         // boolean value = evaluator.evaluateBoolean("password", new Author(1, "cbegin", null, "cbegin@apache.org", "N/A", Section.NEWS));
         // assertFalse(value);
     }
 
     @Test
-    void shouldReturnTrueIfNotZero() {
+    public void testShouldReturnTrueIfNotZero() {
         String expression = "id";
         Map<String, Object> root = new HashMap<>();
-        root.put("id",1);
+        root.put("id", 1);
         boolean value = OgnlUtil.getBooleanValue(expression, root);
         assertTrue(value);
     }
 
     @Test
-    void shouldReturnFalseIfZero() {
+    public void testShouldReturnFalseIfZero() {
         String expression = "id";
         Map<String, Object> root = new HashMap<>();
-        root.put("id",0);
+        root.put("id", 0);
         boolean value = OgnlUtil.getBooleanValue(expression, root);
         assertFalse(value);
     }
 
     @Test
-    void shouldReturnFalseIfZeroWithScale() {
+    public void testShouldReturnFalseIfZeroWithScale() {
         String expression = "id";
         Map<String, Object> root = new HashMap<>();
-        root.put("id",0.0d);
+        root.put("id", 0.0d);
         boolean value = OgnlUtil.getBooleanValue(expression, root);
         assertFalse(value);
     }
 
     @Test
-    void shouldIterateOverIterable() {
+    public void testShouldIterateOverIterable() {
         final HashMap<String, Object> parameterObject = new HashMap<String, Object>() {{
             put("array", new String[]{"1", "2", "3"});
         }};
-        final Iterable<?> iterable = OgnlUtil.getIterable("array",parameterObject);
+        final Iterable<?> iterable = OgnlUtil.getIterable("array", parameterObject);
         int i = 0;
         for (Object o : iterable) {
             assertEquals(String.valueOf(++i), o);
