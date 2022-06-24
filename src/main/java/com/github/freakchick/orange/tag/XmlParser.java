@@ -22,7 +22,7 @@ public class XmlParser {
         nodeHandlerMap.put("choose", new ChooseHandler());
         nodeHandlerMap.put("when", new IfHandler());
         nodeHandlerMap.put("otherwise", new OtherwiseHandler());
-//        nodeHandlerMap.put("bind", new BindHandler());
+        nodeHandlerMap.put("bind", new BindHandler());
     }
 
     public static TagHandler getTagHandler(String tagName) {

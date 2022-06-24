@@ -18,6 +18,7 @@ import static org.hamcrest.Matchers.iterableWithSize;
  * @create: 2022/6/20
  **/
 public class ChooseSqlNodeTest {
+
     private DynamicSqlEngine engine = new DynamicSqlEngine();
 
     @Test
