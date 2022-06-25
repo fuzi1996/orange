@@ -114,8 +114,8 @@ public class WhereSqlNodeTest {
         mapParam.put("name", "nameValue");
 
         SqlMeta meta = this.engine.parse(sql, mapParam.getMap());
-        System.out.println(meta.getSql());
-        meta.getJdbcParamValues().forEach(System.out::println);
+        //System.out.println(meta.getSql());
+        //meta.getJdbcParamValues().forEach(System.out::println);
         assertThat(meta.getSql(), is("SELECT * FROM BLOG\n" +
                 "   WHERE state = ?\n" +
                 "    \n" +

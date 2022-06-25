@@ -34,8 +34,8 @@ public class SetSqlNodeTest {
         mapParam.put("username", "Jensan");
 
         SqlMeta meta = this.engine.parse(sql, mapParam.getMap());
-        System.out.println(meta.getSql());
-        meta.getJdbcParamValues().forEach(System.out::println);
+        //System.out.println(meta.getSql());
+        //meta.getJdbcParamValues().forEach(System.out::println);
         assertThat(meta.getSql(), is("update Author\n" +
                 "     SET username=?\n" +
                 "  where id=?"));
