@@ -26,10 +26,10 @@ public class ForeachSqlNodeTest {
                 "select * from user " +
                         "where name in " +
                         "<foreach collection='list' index='idx' open='(' separator=',' close=')'>" +
-                            "#{item.name} == #{idx}" +
-                            "<if test='id != null'>  " +
-                                "and id = #{id}" +
-                            "</if>" +
+                        "#{item.name} == #{idx}" +
+                        "<if test='id != null'>  " +
+                        "and id = #{id}" +
+                        "</if>" +
                         "</foreach>"
         );
         Map<String, Object> map = new HashMap<>();
@@ -86,9 +86,9 @@ public class ForeachSqlNodeTest {
     public void testOrderForeach() {
         String sql = (
                 "select * from author" +
-                "<foreach item=\"item\" collection=\"orderConditions\" separator=\",\" open=\"order by\" close=\" \" index=\"index\">" +
-                "    ${item}" +
-                "</foreach>"
+                        "<foreach item=\"item\" collection=\"orderConditions\" separator=\",\" open=\"order by\" close=\" \" index=\"index\">" +
+                        "    ${item}" +
+                        "</foreach>"
         );
         Map<String, Object> map = new HashMap<>();
 
