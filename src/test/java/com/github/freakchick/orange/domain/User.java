@@ -1,4 +1,4 @@
-package com.github.freakchick.orange;
+package com.github.freakchick.orange.domain;
 
 /**
  * @program: orange

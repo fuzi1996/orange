@@ -15,16 +15,18 @@ public class MixedSqlNode implements SqlNode {
     }
 
     @Override
-    public void apply(Context context) {
-        for (SqlNode node: contents){
+    public boolean apply(Context context) {
+        for (SqlNode node : contents) {
             node.apply(context);
         }
+        return true;
     }
 
     @Override
-    public void applyParameter(Set<String> set) {
-        for (SqlNode node: contents){
+    public boolean applyParameter(Set<String> set) {
+        for (SqlNode node : contents) {
             node.applyParameter(set);
         }
+        return true;
     }
 }
