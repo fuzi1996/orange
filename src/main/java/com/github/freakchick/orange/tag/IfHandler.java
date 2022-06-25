@@ -9,6 +9,8 @@ import java.util.List;
 
 
 public class IfHandler implements TagHandler {
+    public IfHandler() {
+    }
 
     @Override
     public void handle(Element element, List<SqlNode> targetContents) {

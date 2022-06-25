@@ -3,10 +3,12 @@ package com.github.freakchick.orange.node.foreach;
 import com.github.freakchick.orange.SqlMeta;
 import com.github.freakchick.orange.domain.User;
 import com.github.freakchick.orange.engine.DynamicSqlEngine;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.*;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 
 /**
  * @program: orange
@@ -24,10 +26,10 @@ public class ForeachSqlNodeTest {
                 "select * from user " +
                         "where name in " +
                         "<foreach collection='list' index='idx' open='(' separator=',' close=')'>" +
-                            "#{item.name} == #{idx}" +
-                            "<if test='id != null'>  " +
-                                "and id = #{id}" +
-                            "</if>" +
+                        "#{item.name} == #{idx}" +
+                        "<if test='id != null'>  " +
+                        "and id = #{id}" +
+                        "</if>" +
                         "</foreach>"
         );
         Map<String, Object> map = new HashMap<>();
@@ -38,13 +40,13 @@ public class ForeachSqlNodeTest {
 
         SqlMeta sqlMeta = this.engine.parse(sql, map);
         // System.out.println(sqlMeta.getSql());
-        Assert.assertEquals("select * from user where name in ",sqlMeta.getSql());
-        // sqlMeta.getJdbcParamValues().forEach(System.out::println);
-        Assert.assertEquals(0,sqlMeta.getJdbcParamValues().size());
+        assertThat(sqlMeta.getSql(), is("select * from user where name in "));
+        //sqlMeta.getJdbcParamValues().forEach(System.out::println);
+        assertThat(sqlMeta.getJdbcParamValues(), iterableWithSize(0));
 
         Set<String> strings = this.engine.parseParameter(sql);
         //strings.forEach(System.out::println);
-        Assert.assertEquals(4,strings.size());
+        assertThat(strings, iterableWithSize(4));
     }
 
     @Test
@@ -61,7 +63,7 @@ public class ForeachSqlNodeTest {
         );
         Map<String, Object> map = new HashMap<>();
 
-        User user = new User(10,"name");
+        User user = new User(10, "name");
 
         ArrayList<User> arrayList = new ArrayList<>();
 
@@ -71,22 +73,22 @@ public class ForeachSqlNodeTest {
 
         SqlMeta sqlMeta = this.engine.parse(sql, map);
         // System.out.println(sqlMeta.getSql());
-        Assert.assertEquals("select * from user where name in  (? == ?   and id = ?)",sqlMeta.getSql());
-        // sqlMeta.getJdbcParamValues().forEach(System.out::println);
-        Assert.assertEquals(3,sqlMeta.getJdbcParamValues().size());
+        assertThat(sqlMeta.getSql(), is("select * from user where name in  (? == ?   and id = ?)"));
+        //sqlMeta.getJdbcParamValues().forEach(System.out::println);
+        assertThat(sqlMeta.getJdbcParamValues(), iterableWithSize(3));
 
         Set<String> strings = this.engine.parseParameter(sql);
         //strings.forEach(System.out::println);
-        Assert.assertEquals(4,strings.size());
+        assertThat(strings, iterableWithSize(4));
     }
 
     @Test
     public void testOrderForeach() {
         String sql = (
                 "select * from author" +
-                "<foreach item=\"item\" collection=\"orderConditions\" separator=\",\" open=\"order by\" close=\" \" index=\"index\">" +
-                "    ${item}" +
-                "</foreach>"
+                        "<foreach item=\"item\" collection=\"orderConditions\" separator=\",\" open=\"order by\" close=\" \" index=\"index\">" +
+                        "    ${item}" +
+                        "</foreach>"
         );
         Map<String, Object> map = new HashMap<>();
 
@@ -97,44 +99,44 @@ public class ForeachSqlNodeTest {
         map.put("orderConditions", columns);
 
         SqlMeta sqlMeta = this.engine.parse(sql, map);
-        Assert.assertEquals("select * from author order by    rank,    age,    id ",sqlMeta.getSql());
-        Assert.assertEquals(0,sqlMeta.getJdbcParamValues().size());
+        assertThat(sqlMeta.getSql(), is("select * from author order by    rank,    age,    id "));
+        assertThat(sqlMeta.getJdbcParamValues(), iterableWithSize(0));
 
         Set<String> strings = this.engine.parseParameter(sql);
         //strings.forEach(System.out::println);
-        Assert.assertEquals(2,strings.size());
+        assertThat(strings, iterableWithSize(2));
     }
 
     @Test
-    public void shouldGetAUser(){
+    public void testShouldGetAUser() {
         String sql = (
                 "select * from users\n" +
-                "         WHERE id in\n" +
-                "        <foreach item=\"item\" index=\"index\" collection=\"friendList\"\n" +
-                "          separator=\",\" open=\"(\" close=\")\">\n" +
-                "          ${item.id}\n" +
-                "        </foreach>"
+                        "         WHERE id in\n" +
+                        "        <foreach item=\"item\" index=\"index\" collection=\"friendList\"\n" +
+                        "          separator=\",\" open=\"(\" close=\")\">\n" +
+                        "          ${item.id}\n" +
+                        "        </foreach>"
         );
         Map<String, Object> map = new HashMap<>();
         Map<String, Object> friend = new HashMap<>();
-        friend.put("id",6);
+        friend.put("id", 6);
         List<Map<String, Object>> friendList = new ArrayList<>();
         friendList.add(friend);
         map.put("friendList", friendList);
 
         SqlMeta sqlMeta = this.engine.parse(sql, map);
         //System.out.println(sqlMeta.getSql());
-        Assert.assertEquals("select * from users\n" +
+        assertThat(sqlMeta.getSql(), is("select * from users\n" +
                 "         WHERE id in\n" +
                 "         (\n" +
                 "          6\n" +
-                "        )",sqlMeta.getSql());
+                "        )"));
         //sqlMeta.getJdbcParamValues().forEach(System.out::println);
-        Assert.assertEquals(0,sqlMeta.getJdbcParamValues().size());
+        assertThat(sqlMeta.getJdbcParamValues(), iterableWithSize(0));
 
         Set<String> strings = this.engine.parseParameter(sql);
         //strings.forEach(System.out::println);
-        Assert.assertEquals(2,strings.size());
+        assertThat(strings, iterableWithSize(2));
     }
 // https://gitee.com/freakchicken/orange/issues/I5APFR
 //    @Test
@@ -198,7 +200,7 @@ public class ForeachSqlNodeTest {
 //    }
 
     @Test
-    public void nullItemInContext(){
+    public void testNullItemInContext() {
         String sql = (
                 "select name from users\n" +
                         "      <where>\n" +
@@ -212,7 +214,7 @@ public class ForeachSqlNodeTest {
         );
         Map<String, Object> map = new HashMap<>();
         Map<String, Object> friend = new HashMap<>();
-        friend.put("id",3);
+        friend.put("id", 3);
         List<Map<String, Object>> list = new ArrayList<>();
         list.add(friend);
         list.add(null);
@@ -220,7 +222,7 @@ public class ForeachSqlNodeTest {
 
         SqlMeta sqlMeta = this.engine.parse(sql, map);
         //System.out.println(sqlMeta.getSql());
-        Assert.assertEquals("select name from users\n" +
+        assertThat(sqlMeta.getSql(), is("select name from users\n" +
                 "       WHERE id in\n" +
                 "         (\n" +
                 "           \n" +
@@ -228,17 +230,17 @@ public class ForeachSqlNodeTest {
                 "          \n" +
                 "        \n" +
                 "          \n" +
-                "        )",sqlMeta.getSql());
+                "        )"));
         //sqlMeta.getJdbcParamValues().forEach(System.out::println);
-        Assert.assertEquals(1,sqlMeta.getJdbcParamValues().size());
+        assertThat(sqlMeta.getJdbcParamValues(), iterableWithSize(1));
 
         Set<String> strings = this.engine.parseParameter(sql);
         //strings.forEach(System.out::println);
-        Assert.assertEquals(2,strings.size());
+        assertThat(strings, iterableWithSize(2));
     }
 
     @Test
-    public void shouldReportMissingPropertyName(){
+    public void testShouldReportMissingPropertyName() {
         String sql = (
                 "insert into users (id, name) values\n" +
                         "    <foreach item=\"item\" collection=\"list\" separator=\",\">\n" +
@@ -247,35 +249,35 @@ public class ForeachSqlNodeTest {
         );
         Map<String, Object> map = new HashMap<>();
         Map<String, Object> friend = new HashMap<>();
-        friend.put("id",3);
-        friend.put("name","aname");
+        friend.put("id", 3);
+        friend.put("name", "aname");
         List<Map<String, Object>> list = new ArrayList<>();
         list.add(friend);
         map.put("list", list);
 
         try {
             this.engine.parse(sql, map);
-            Assert.assertTrue(false);
-        }catch (Exception e){
-            Assert.assertTrue(e instanceof RuntimeException);
-            Assert.assertEquals("could not found value : list[0].idd",e.getMessage());
+            assertThat(true, is(false));
+        } catch (Exception e) {
+            assertThat(e, instanceOf(RuntimeException.class));
+            assertThat(e.getMessage(), is("could not found value : list[0].idd"));
         }
         Set<String> strings = this.engine.parseParameter(sql);
         //strings.forEach(System.out::println);
-        Assert.assertEquals(3,strings.size());
+        assertThat(strings, iterableWithSize(3));
     }
 
     @Test
-    public void shouldRemoveItemVariableInTheContext(){
+    public void testShouldRemoveItemVariableInTheContext() {
         String sql = (
                 "    select count(*) from users where id in\n" +
-                "    <foreach collection=\"ids\" item=\"id\" open=\"(\" close=\")\" separator=\",\">\n" +
-                "      <foreach collection=\"ids2\" item=\"id\">\n" +
-                "        #{id},\n" +
-                "      </foreach>\n" +
-                "      #{id}\n" +
-                "    </foreach>\n" +
-                "    or id = #{id}"
+                        "    <foreach collection=\"ids\" item=\"id\" open=\"(\" close=\")\" separator=\",\">\n" +
+                        "      <foreach collection=\"ids2\" item=\"id\">\n" +
+                        "        #{id},\n" +
+                        "      </foreach>\n" +
+                        "      #{id}\n" +
+                        "    </foreach>\n" +
+                        "    or id = #{id}"
         );
         Map<String, Object> map = new HashMap<>();
 
@@ -293,7 +295,7 @@ public class ForeachSqlNodeTest {
 
         SqlMeta sqlMeta = this.engine.parse(sql, map);
         // System.out.println(sqlMeta.getSql());
-        Assert.assertEquals("    select count(*) from users where id in\n" +
+        assertThat(sqlMeta.getSql(), is("    select count(*) from users where id in\n" +
                 "     (\n" +
                 "       \n" +
                 "        ?,\n" +
@@ -309,26 +311,26 @@ public class ForeachSqlNodeTest {
                 "      \n" +
                 "      ?\n" +
                 "    )\n" +
-                "    or id = ?",sqlMeta.getSql());
-        // sqlMeta.getJdbcParamValues().forEach(System.out::println);
-        Assert.assertEquals(7,sqlMeta.getJdbcParamValues().size());
+                "    or id = ?"));
+        //sqlMeta.getJdbcParamValues().forEach(System.out::println);
+        assertThat(sqlMeta.getJdbcParamValues(), iterableWithSize(7));
 
         Set<String> strings = this.engine.parseParameter(sql);
         //strings.forEach(System.out::println);
-        Assert.assertEquals(3,strings.size());
+        assertThat(strings, iterableWithSize(3));
     }
 
     @Test
-    public void shouldRemoveIndexVariableInTheContext(){
+    public void testShouldRemoveIndexVariableInTheContext() {
         String sql = (
                 "    select count(*) from users where id in\n" +
-                "    <foreach collection=\"idxs\" index=\"idx\" open=\"(\" close=\")\" separator=\",\">\n" +
-                "      <foreach collection=\"idxs2\" index=\"idx\">\n" +
-                "        #{idx},\n" +
-                "      </foreach>\n" +
-                "      #{idx} + 2\n" +
-                "    </foreach>\n" +
-                "    or id = #{idx}"
+                        "    <foreach collection=\"idxs\" index=\"idx\" open=\"(\" close=\")\" separator=\",\">\n" +
+                        "      <foreach collection=\"idxs2\" index=\"idx\">\n" +
+                        "        #{idx},\n" +
+                        "      </foreach>\n" +
+                        "      #{idx} + 2\n" +
+                        "    </foreach>\n" +
+                        "    or id = #{idx}"
         );
         Map<String, Object> map = new HashMap<>();
 
@@ -346,7 +348,7 @@ public class ForeachSqlNodeTest {
 
         SqlMeta sqlMeta = this.engine.parse(sql, map);
         // System.out.println(sqlMeta.getSql());
-        Assert.assertEquals("    select count(*) from users where id in\n" +
+        assertThat(sqlMeta.getSql(), is("    select count(*) from users where id in\n" +
                 "     (\n" +
                 "       \n" +
                 "        ?,\n" +
@@ -362,12 +364,12 @@ public class ForeachSqlNodeTest {
                 "      \n" +
                 "      ? + 2\n" +
                 "    )\n" +
-                "    or id = ?",sqlMeta.getSql());
-        // sqlMeta.getJdbcParamValues().forEach(System.out::println);
-        Assert.assertEquals(7,sqlMeta.getJdbcParamValues().size());
+                "    or id = ?"));
+        //sqlMeta.getJdbcParamValues().forEach(System.out::println);
+        assertThat(sqlMeta.getJdbcParamValues(), iterableWithSize(7));
 
         Set<String> strings = this.engine.parseParameter(sql);
-        strings.forEach(System.out::println);
-        Assert.assertEquals(3,strings.size());
+        //strings.forEach(System.out::println);
+        assertThat(strings, iterableWithSize(3));
     }
 }

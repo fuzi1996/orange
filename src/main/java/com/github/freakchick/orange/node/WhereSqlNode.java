@@ -9,7 +9,6 @@ public class WhereSqlNode extends TrimSqlNode {
             , "and ", "and\r", "and\t", "and\n", "or ", "or\r", "or\t", "or\n");
 
     public WhereSqlNode(SqlNode contents) {
-
         super(contents, "WHERE ", null, prefixesToOverride, null);
     }
 }

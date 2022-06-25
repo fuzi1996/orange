@@ -4,11 +4,12 @@ package com.github.freakchick.orange.token;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 /**
  * @program: orange
@@ -32,7 +33,7 @@ public class TokenParserTest {
     }
 
     @Test
-    void shouldDemonstrateGenericTokenReplacement() {
+    public void testShouldDemonstrateGenericTokenReplacement() {
         TokenParser parser = new TokenParser("${", "}", new VariableTokenHandler(new HashMap<String, String>() {
             {
                 put("first_name", "James");
@@ -43,42 +44,42 @@ public class TokenParserTest {
             }
         }));
 
-        assertEquals("James T Kirk reporting.", parser.parse("${first_name} ${initial} ${last_name} reporting."));
-        assertEquals("Hello captain James T Kirk", parser.parse("Hello captain ${first_name} ${initial} ${last_name}"));
-        assertEquals("James T Kirk", parser.parse("${first_name} ${initial} ${last_name}"));
-        assertEquals("JamesTKirk", parser.parse("${first_name}${initial}${last_name}"));
-        assertEquals("{}JamesTKirk", parser.parse("{}${first_name}${initial}${last_name}"));
-        assertEquals("}JamesTKirk", parser.parse("}${first_name}${initial}${last_name}"));
+        assertThat(parser.parse("${first_name} ${initial} ${last_name} reporting."), is("James T Kirk reporting."));
+        assertThat(parser.parse("Hello captain ${first_name} ${initial} ${last_name}"), is("Hello captain James T Kirk"));
+        assertThat(parser.parse("${first_name} ${initial} ${last_name}"), is("James T Kirk"));
+        assertThat(parser.parse("${first_name}${initial}${last_name}"), is("JamesTKirk"));
+        assertThat(parser.parse("{}${first_name}${initial}${last_name}"), is("{}JamesTKirk"));
+        assertThat(parser.parse("}${first_name}${initial}${last_name}"), is("}JamesTKirk"));
 
-        assertEquals("}James{{T}}Kirk", parser.parse("}${first_name}{{${initial}}}${last_name}"));
-        assertEquals("}James}T{Kirk", parser.parse("}${first_name}}${initial}{${last_name}"));
-        assertEquals("}James}T{Kirk", parser.parse("}${first_name}}${initial}{${last_name}"));
-        assertEquals("}James}T{Kirk{{}}", parser.parse("}${first_name}}${initial}{${last_name}{{}}"));
-        assertEquals("}James}T{Kirk{{}}", parser.parse("}${first_name}}${initial}{${last_name}{{}}${}"));
+        assertThat(parser.parse("}${first_name}{{${initial}}}${last_name}"), is("}James{{T}}Kirk"));
+        assertThat(parser.parse("}${first_name}}${initial}{${last_name}"), is("}James}T{Kirk"));
+        assertThat(parser.parse("}${first_name}}${initial}{${last_name}"), is("}James}T{Kirk"));
+        assertThat(parser.parse("}${first_name}}${initial}{${last_name}{{}}"), is("}James}T{Kirk{{}}"));
+        assertThat(parser.parse("}${first_name}}${initial}{${last_name}{{}}${}"), is("}James}T{Kirk{{}}"));
 
-        assertEquals("{$$something}JamesTKirk", parser.parse("{$$something}${first_name}${initial}${last_name}"));
-        assertEquals("${", parser.parse("${"));
-        assertEquals("${\\}", parser.parse("${\\}"));
-        assertEquals("Hiya", parser.parse("${var{with\\}brace}"));
-        assertEquals("", parser.parse("${}"));
-        assertEquals("}", parser.parse("}"));
-        assertEquals("Hello ${ this is a test.", parser.parse("Hello ${ this is a test."));
-        assertEquals("Hello } this is a test.", parser.parse("Hello } this is a test."));
-        assertEquals("Hello } ${ this is a test.", parser.parse("Hello } ${ this is a test."));
+        assertThat(parser.parse("{$$something}${first_name}${initial}${last_name}"), is("{$$something}JamesTKirk"));
+        assertThat(parser.parse("${"), is("${"));
+        assertThat(parser.parse("${\\}"), is("${\\}"));
+        assertThat(parser.parse("${var{with\\}brace}"), is("Hiya"));
+        assertThat(parser.parse("${}"), is(""));
+        assertThat(parser.parse("}"), is("}"));
+        assertThat(parser.parse("Hello ${ this is a test."), is("Hello ${ this is a test."));
+        assertThat(parser.parse("Hello } this is a test."), is("Hello } this is a test."));
+        assertThat(parser.parse("Hello } ${ this is a test."), is("Hello } ${ this is a test."));
     }
 
     @Test
-    void shallNotInterpolateSkippedVaiables() {
+    public void testShallNotInterpolateSkippedVaiables() {
         TokenParser parser = new TokenParser("${", "}", new VariableTokenHandler(new HashMap<>()));
 
-        assertEquals("${skipped} variable", parser.parse("\\${skipped} variable"));
-        assertEquals("This is a ${skipped} variable", parser.parse("This is a \\${skipped} variable"));
-        assertEquals("null ${skipped} variable", parser.parse("${skipped} \\${skipped} variable"));
-        assertEquals("The null is ${skipped} variable", parser.parse("The ${skipped} is \\${skipped} variable"));
+        assertThat(parser.parse("\\${skipped} variable"), is("${skipped} variable"));
+        assertThat(parser.parse("This is a \\${skipped} variable"), is("This is a ${skipped} variable"));
+        assertThat(parser.parse("${skipped} \\${skipped} variable"), is("null ${skipped} variable"));
+        assertThat(parser.parse("The ${skipped} is \\${skipped} variable"), is("The null is ${skipped} variable"));
     }
 
     @Test
-    void shouldParseFastOnJdk7u6() {
+    public void testShouldParseFastOnJdk7u6() {
         Assertions.assertTimeout(Duration.ofMillis(1000), () -> {
             TokenParser parser = new TokenParser("${", "}", new VariableTokenHandler(new HashMap<String, String>() {
                 {
@@ -97,7 +98,7 @@ public class TokenParserTest {
             for (int i = 0; i < 10000; i++) {
                 expected.append("James T Kirk reporting. ");
             }
-            assertEquals(expected.toString(), parser.parse(input.toString()));
+            assertThat(parser.parse(input.toString()), is(expected.toString()));
         });
     }
 }

@@ -7,9 +7,9 @@ import java.util.Set;
 
 public class IfSqlNode implements SqlNode {
 
-    String test;
+    private String test;
 
-    SqlNode contents;
+    private SqlNode contents;
 
     public IfSqlNode(String test, SqlNode contents) {
         this.test = test;
@@ -17,18 +17,20 @@ public class IfSqlNode implements SqlNode {
     }
 
     @Override
-    public void apply(Context context) {
+    public boolean apply(Context context) {
         Boolean value = context.getOgnlBooleanValue(test);
         if (value) {
             //标签类SqlNode先拼接空格，和前面的内容隔开
             context.appendSql(" ");
             contents.apply(context);
+            return true;
         }
-
+        return false;
     }
 
     @Override
-    public void applyParameter(Set<String> set) {
+    public boolean applyParameter(Set<String> set) {
         contents.applyParameter(set);
+        return true;
     }
 }

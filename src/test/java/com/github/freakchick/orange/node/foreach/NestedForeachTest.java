@@ -2,10 +2,12 @@ package com.github.freakchick.orange.node.foreach;
 
 import com.github.freakchick.orange.SqlMeta;
 import com.github.freakchick.orange.engine.DynamicSqlEngine;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.*;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 
 /**
  * @program: orange
@@ -21,50 +23,50 @@ public class NestedForeachTest {
     public void testSimpleSelect(){
         String sql = (
                 "    select *\n" +
-                "    from names\n" +
-                "    <where>\n" +
-                "      <foreach collection=\"names\" item=\"name\" separator=\"or\">\n" +
-                "        lastName = #{name.lastName}\n" +
-                "      </foreach>\n" +
-                "    </where>"
+                        "    from names\n" +
+                        "    <where>\n" +
+                        "      <foreach collection=\"names\" item=\"name\" separator=\"or\">\n" +
+                        "        lastName = #{name.lastName}\n" +
+                        "      </foreach>\n" +
+                        "    </where>"
         );
         Map<String, Object> map = new HashMap<>();
 
         List<Map<String, Object>> names = new ArrayList<>();
         Map<String, Object> name1 = new HashMap<>();
-        name1.put("lastName","name1LastName");
+        name1.put("lastName", "name1LastName");
         names.add(name1);
         Map<String, Object> name2 = new HashMap<>();
-        name2.put("lastName","name2LastName");
+        name2.put("lastName", "name2LastName");
         names.add(name2);
 
         map.put("names", names);
 
         SqlMeta sqlMeta = this.engine.parse(sql, map);
         //System.out.println(sqlMeta.getSql());
-        Assert.assertEquals("    select *\n" +
+        assertThat(sqlMeta.getSql(), is("    select *\n" +
                 "    from names\n" +
                 "     WHERE lastName = ?\n" +
                 "      or\n" +
-                "        lastName = ?",sqlMeta.getSql());
+                "        lastName = ?"));
         //sqlMeta.getJdbcParamValues().forEach(System.out::println);
-        Assert.assertEquals(2,sqlMeta.getJdbcParamValues().size());
+        assertThat(sqlMeta.getJdbcParamValues(), iterableWithSize(2));
 
         Set<String> strings = this.engine.parseParameter(sql);
         //strings.forEach(System.out::println);
-        Assert.assertEquals(2,strings.size());
+        assertThat(strings, iterableWithSize(2));
     }
 
     @Test
     public void testSimpleSelectWithPrimitives(){
         String sql = (
                 "    select *\n" +
-                "    from names\n" +
-                "    <where>\n" +
-                "      <foreach collection=\"ids\" item=\"id\" separator=\",\" open=\"id in (\" close=\")\">\n" +
-                "        ${id}\n" +
-                "      </foreach>\n" +
-                "    </where>"
+                        "    from names\n" +
+                        "    <where>\n" +
+                        "      <foreach collection=\"ids\" item=\"id\" separator=\",\" open=\"id in (\" close=\")\">\n" +
+                        "        ${id}\n" +
+                        "      </foreach>\n" +
+                        "    </where>"
         );
         Map<String, Object> map = new HashMap<>();
 
@@ -73,7 +75,7 @@ public class NestedForeachTest {
 
         SqlMeta sqlMeta = this.engine.parse(sql, map);
         //System.out.println(sqlMeta.getSql());
-        Assert.assertEquals("    select *\n" +
+        assertThat(sqlMeta.getSql(), is("    select *\n" +
                 "    from names\n" +
                 "     WHERE id in (\n" +
                 "        1\n" +
@@ -81,25 +83,25 @@ public class NestedForeachTest {
                 "        3\n" +
                 "      ,\n" +
                 "        5\n" +
-                "      )",sqlMeta.getSql());
+                "      )"));
         //sqlMeta.getJdbcParamValues().forEach(System.out::println);
-        Assert.assertEquals(0,sqlMeta.getJdbcParamValues().size());
+        assertThat(sqlMeta.getJdbcParamValues(), iterableWithSize(0));
 
         Set<String> strings = this.engine.parseParameter(sql);
         //strings.forEach(System.out::println);
-        Assert.assertEquals(2,strings.size());
+        assertThat(strings, iterableWithSize(2));
     }
 
     @Test
     public void testSimpleSelectWithMapperAndPrimitives(){
         String sql = (
                 "    select *\n" +
-                "    from names\n" +
-                "    <where>\n" +
-                "      <foreach collection=\"ids\" item=\"id\" separator=\",\" open=\"id in (\" close=\")\">\n" +
-                "        #{id}\n" +
-                "      </foreach>\n" +
-                "    </where>"
+                        "    from names\n" +
+                        "    <where>\n" +
+                        "      <foreach collection=\"ids\" item=\"id\" separator=\",\" open=\"id in (\" close=\")\">\n" +
+                        "        #{id}\n" +
+                        "      </foreach>\n" +
+                        "    </where>"
         );
         Map<String, Object> map = new HashMap<>();
 
@@ -108,7 +110,7 @@ public class NestedForeachTest {
 
         SqlMeta sqlMeta = this.engine.parse(sql, map);
         //System.out.println(sqlMeta.getSql());
-        Assert.assertEquals("    select *\n" +
+        assertThat(sqlMeta.getSql(), is("    select *\n" +
                 "    from names\n" +
                 "     WHERE id in (\n" +
                 "        ?\n" +
@@ -116,27 +118,27 @@ public class NestedForeachTest {
                 "        ?\n" +
                 "      ,\n" +
                 "        ?\n" +
-                "      )",sqlMeta.getSql());
+                "      )"));
         //sqlMeta.getJdbcParamValues().forEach(System.out::println);
-        Assert.assertEquals(3,sqlMeta.getJdbcParamValues().size());
+        assertThat(sqlMeta.getJdbcParamValues(), iterableWithSize(3));
 
         Set<String> strings = this.engine.parseParameter(sql);
         //strings.forEach(System.out::println);
-        Assert.assertEquals(2,strings.size());
+        assertThat(strings, iterableWithSize(2));
     }
 
     @Test
     public void testNestedSelect(){
         String sql = (
                 "    select *\n" +
-                "    from names\n" +
-                "    <where>\n" +
-                "      <foreach collection=\"names\" item=\"name\" separator=\"or\">\n" +
-                "        <foreach collection=\"name.firstNames\" item=\"firstName\" separator=\"or\">\n" +
-                "          (lastName = #{name.lastName} and firstName = #{firstName})\n" +
-                "        </foreach>\n" +
-                "      </foreach>\n" +
-                "    </where>"
+                        "    from names\n" +
+                        "    <where>\n" +
+                        "      <foreach collection=\"names\" item=\"name\" separator=\"or\">\n" +
+                        "        <foreach collection=\"name.firstNames\" item=\"firstName\" separator=\"or\">\n" +
+                        "          (lastName = #{name.lastName} and firstName = #{firstName})\n" +
+                        "        </foreach>\n" +
+                        "      </foreach>\n" +
+                        "    </where>"
         );
         Map<String, Object> map = new HashMap<>();
 
@@ -149,18 +151,18 @@ public class NestedForeachTest {
         name1.put("firstNames",firstNames1);
         names.add(name1);
         Map<String, Object> name2 = new HashMap<>();
-        name2.put("lastName","name2LastName");
+        name2.put("lastName", "name2LastName");
         List<String> firstNames2 = new ArrayList<>();
         firstNames2.add("name2FirstName1");
         firstNames2.add("name2FirstName2");
-        name2.put("firstNames",firstNames2);
+        name2.put("firstNames", firstNames2);
         names.add(name2);
 
         map.put("names", names);
 
         SqlMeta sqlMeta = this.engine.parse(sql, map);
         //System.out.println(sqlMeta.getSql());
-        Assert.assertEquals("    select *\n" +
+        assertThat(sqlMeta.getSql(), is("    select *\n" +
                 "    from names\n" +
                 "     WHERE (lastName = ? and firstName = ?)\n" +
                 "        or\n" +
@@ -170,13 +172,13 @@ public class NestedForeachTest {
                 "         \n" +
                 "          (lastName = ? and firstName = ?)\n" +
                 "        or\n" +
-                "          (lastName = ? and firstName = ?)",sqlMeta.getSql());
+                "          (lastName = ? and firstName = ?)"));
         //sqlMeta.getJdbcParamValues().forEach(System.out::println);
-        Assert.assertEquals(8,sqlMeta.getJdbcParamValues().size());
+        assertThat(sqlMeta.getJdbcParamValues(), iterableWithSize(8));
 
         Set<String> strings = this.engine.parseParameter(sql);
         //strings.forEach(System.out::println);
-        Assert.assertEquals(4,strings.size());
+        assertThat(strings, iterableWithSize(4));
     }
 
     @Test
@@ -203,17 +205,17 @@ public class NestedForeachTest {
         name1.put("firstNames",firstNames1);
         names.add(name1);
         Map<String, Object> name2 = new HashMap<>();
-        name2.put("lastName","name2LastName");
+        name2.put("lastName", "name2LastName");
         List<String> firstNames2 = new ArrayList<>();
         firstNames2.add("name2FirstName1");
-        name2.put("firstNames",firstNames2);
+        name2.put("firstNames", firstNames2);
         names.add(name2);
 
         map.put("names", names);
 
         SqlMeta sqlMeta = this.engine.parse(sql, map);
         //System.out.println(sqlMeta.getSql());
-        Assert.assertEquals("    select *\n" +
+        assertThat(sqlMeta.getSql(), is("    select *\n" +
                 "    from names\n" +
                 "     WHERE (lastName = ? and firstName = ?)\n" +
                 "        or\n" +
@@ -221,12 +223,12 @@ public class NestedForeachTest {
                 "        \n" +
                 "      or\n" +
                 "         \n" +
-                "          (lastName = ? and firstName = ?)",sqlMeta.getSql());
+                "          (lastName = ? and firstName = ?)"));
         //sqlMeta.getJdbcParamValues().forEach(System.out::println);
-        Assert.assertEquals(6,sqlMeta.getJdbcParamValues().size());
+        assertThat(sqlMeta.getJdbcParamValues(), iterableWithSize(6));
 
         Set<String> strings = this.engine.parseParameter(sql);
         //strings.forEach(System.out::println);
-        Assert.assertEquals(4,strings.size());
+        assertThat(strings, iterableWithSize(4));
     }
 }

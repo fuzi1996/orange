@@ -5,7 +5,6 @@ import com.github.freakchick.orange.token.TokenHandler;
 import com.github.freakchick.orange.token.TokenParser;
 import com.github.freakchick.orange.util.OgnlUtil;
 import com.github.freakchick.orange.util.RegexUtil;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
 
@@ -33,12 +32,12 @@ public class ForeachSqlNode implements SqlNode {
     }
 
     @Override
-    public void apply(Context context) {
+    public boolean apply(Context context) {
         // 标签类SqlNode先拼接空格，和前面的内容隔开
         Iterable<?> iterable = OgnlUtil.getIterable(collection, context.getData());
         // issue 3
-        if(null == iterable || !iterable.iterator().hasNext()){
-            return;
+        if (!iterable.iterator().hasNext()) {
+            return true;
         }
 
         context.appendSql(" ");
@@ -48,7 +47,7 @@ public class ForeachSqlNode implements SqlNode {
         context.appendSql(open);
 
         boolean hasOriginItemData = context.getData().containsKey(this.item);
-        Object originItemData = context.getData().getOrDefault(this.item,null);
+        Object originItemData = context.getData().getOrDefault(this.item, null);
 
         boolean hasOriginIndexData = context.getData().containsKey(this.index);
         Object originIndexData = context.getData().getOrDefault(this.index,null);
@@ -81,7 +80,7 @@ public class ForeachSqlNode implements SqlNode {
             }
             String childSqlText = getChildText(proxy, currentIndex, mapKey);
             // foreach 里面存在if等可能最终语句为空因此需要判断一下
-            boolean hasChildSqlText = StringUtils.isNotBlank(childSqlText);
+            boolean hasChildSqlText = null != childSqlText && childSqlText.trim().length() > 0;
 
             //不是第一次，需要拼接分隔符
             if (currentIndex != 0 && hasChildSqlText) {
@@ -104,6 +103,7 @@ public class ForeachSqlNode implements SqlNode {
             context.getData().remove(this.index);
         }
         context.appendSql(close);
+        return true;
     }
 
     private void applyItem(Context context, Object o) {
@@ -119,19 +119,20 @@ public class ForeachSqlNode implements SqlNode {
     }
 
     @Override
-    public void applyParameter(Set<String> set) {
+    public boolean applyParameter(Set<String> set) {
         set.add(collection);
         Set<String> temp = new HashSet<>();
         contents.applyParameter(set);
-        for (String key: temp){
-            if (key.matches(item + "[.,:\\s\\[]")){
+        for (String key : temp) {
+            if (key.matches(item + "[.,:\\s\\[]")) {
                 continue;
             }
-            if (key.matches(index + "[.,:\\s\\[]")){
+            if (key.matches(index + "[.,:\\s\\[]")) {
                 continue;
             }
             set.add(key);
         }
+        return true;
     }
 
     /**
