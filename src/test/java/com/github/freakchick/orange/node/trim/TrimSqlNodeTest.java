@@ -37,8 +37,8 @@ public class TrimSqlNodeTest {
         mapParam.put("state", 1);
 
         SqlMeta meta = this.engine.parse(sql, mapParam.getMap());
-        System.out.println(meta.getSql());
-        meta.getJdbcParamValues().forEach(System.out::println);
+        //System.out.println(meta.getSql());
+        //meta.getJdbcParamValues().forEach(System.out::println);
         assertThat(meta.getSql(), is("SELECT * FROM BLOG\n" +
                 "   where state = ?"));
         assertThat(meta.getJdbcParamValues(), iterableWithSize(1));

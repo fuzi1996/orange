@@ -67,20 +67,4 @@ public class ForeachSqlNodeMapTest {
         //strings.forEach(System.out::println);
         assertThat(strings, iterableWithSize(3));
     }
-
-    @Test
-    public void testShouldGetNestedBeanKeyValueEntries2() {
-        String sql = (
-                "select count(*) from key_cols where\n" +
-                        "        <foreach item=\"item\" index=\"key\" collection=\"map\"\n" +
-                        "            open=\"\" separator=\"AND\" close=\"\">${key} = #{item}</foreach>"
-        );
-        MapParam mapParam = new MapParam();
-        mapParam.getMap().put("col_a", 22);
-        mapParam.getMap().put("col_b", 222);
-
-        SqlMeta sqlMeta = this.engine.parse(sql, mapParam.getParam());
-        System.out.println(sqlMeta.getSql());
-        sqlMeta.getJdbcParamValues().forEach(System.out::println);
-    }
 }

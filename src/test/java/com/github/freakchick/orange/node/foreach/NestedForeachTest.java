@@ -23,12 +23,12 @@ public class NestedForeachTest {
     public void testSimpleSelect(){
         String sql = (
                 "    select *\n" +
-                "    from names\n" +
-                "    <where>\n" +
-                "      <foreach collection=\"names\" item=\"name\" separator=\"or\">\n" +
-                "        lastName = #{name.lastName}\n" +
-                "      </foreach>\n" +
-                "    </where>"
+                        "    from names\n" +
+                        "    <where>\n" +
+                        "      <foreach collection=\"names\" item=\"name\" separator=\"or\">\n" +
+                        "        lastName = #{name.lastName}\n" +
+                        "      </foreach>\n" +
+                        "    </where>"
         );
         Map<String, Object> map = new HashMap<>();
 
@@ -61,12 +61,12 @@ public class NestedForeachTest {
     public void testSimpleSelectWithPrimitives(){
         String sql = (
                 "    select *\n" +
-                "    from names\n" +
-                "    <where>\n" +
-                "      <foreach collection=\"ids\" item=\"id\" separator=\",\" open=\"id in (\" close=\")\">\n" +
-                "        ${id}\n" +
-                "      </foreach>\n" +
-                "    </where>"
+                        "    from names\n" +
+                        "    <where>\n" +
+                        "      <foreach collection=\"ids\" item=\"id\" separator=\",\" open=\"id in (\" close=\")\">\n" +
+                        "        ${id}\n" +
+                        "      </foreach>\n" +
+                        "    </where>"
         );
         Map<String, Object> map = new HashMap<>();
 
@@ -96,12 +96,12 @@ public class NestedForeachTest {
     public void testSimpleSelectWithMapperAndPrimitives(){
         String sql = (
                 "    select *\n" +
-                "    from names\n" +
-                "    <where>\n" +
-                "      <foreach collection=\"ids\" item=\"id\" separator=\",\" open=\"id in (\" close=\")\">\n" +
-                "        #{id}\n" +
-                "      </foreach>\n" +
-                "    </where>"
+                        "    from names\n" +
+                        "    <where>\n" +
+                        "      <foreach collection=\"ids\" item=\"id\" separator=\",\" open=\"id in (\" close=\")\">\n" +
+                        "        #{id}\n" +
+                        "      </foreach>\n" +
+                        "    </where>"
         );
         Map<String, Object> map = new HashMap<>();
 
@@ -131,14 +131,14 @@ public class NestedForeachTest {
     public void testNestedSelect(){
         String sql = (
                 "    select *\n" +
-                "    from names\n" +
-                "    <where>\n" +
-                "      <foreach collection=\"names\" item=\"name\" separator=\"or\">\n" +
-                "        <foreach collection=\"name.firstNames\" item=\"firstName\" separator=\"or\">\n" +
-                "          (lastName = #{name.lastName} and firstName = #{firstName})\n" +
-                "        </foreach>\n" +
-                "      </foreach>\n" +
-                "    </where>"
+                        "    from names\n" +
+                        "    <where>\n" +
+                        "      <foreach collection=\"names\" item=\"name\" separator=\"or\">\n" +
+                        "        <foreach collection=\"name.firstNames\" item=\"firstName\" separator=\"or\">\n" +
+                        "          (lastName = #{name.lastName} and firstName = #{firstName})\n" +
+                        "        </foreach>\n" +
+                        "      </foreach>\n" +
+                        "    </where>"
         );
         Map<String, Object> map = new HashMap<>();
 
